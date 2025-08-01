@@ -1,28 +1,30 @@
 /** @jsx h */
 import "./style.css";
 import { el, h } from "./mini-dom/el/index.ts";
-import { makeEffect, makeMemo, makeState } from "./mini-dom/make/index.ts";
+import {
+  makeEffect,
+  makeMemo,
+  makeState,
+  State,
+} from "./mini-dom/make/index.ts";
 
-const count = makeState(1);
+function Button({ name, index }: { name: string; index: State<number> }) {
+  const count = makeState(1);
+  return (
+    <button onclick={() => count.value++}>
+      hello {name} {count} {index}
+    </button>
+  );
+}
 
-const count2 = makeMemo(() => count.value * 2);
+const index = makeState(0);
 
-const span = <span>{count.value}</span>;
-
-const btn = <button onclick={() => count.value++}>click {span} </button>;
-
-el.$("div", "#app")?.appendChild(btn);
-
-const des = makeEffect(() => {
-  span.innerHTML = String(count2.value);
-});
+const els = <Button name="rolio" index={index} />;
 
 setInterval(() => {
-  btn.click();
+  index.value++;
 }, 1000);
-function Compo() {
-  return <div>hello</div>;
-}
-const els = <Compo />;
-btn.append(els);
+
+el.$("div", "#app")?.appendChild(els);
+
 // setupCounter(document.querySelector<HTMLButtonElement>("#counter")!);

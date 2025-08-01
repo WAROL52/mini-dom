@@ -1,3 +1,4 @@
+import { makeEffect, State } from "../make";
 import type { ComponentProps } from "./type";
 
 export function el<K extends keyof HTMLElementTagNameMap>(
@@ -11,9 +12,16 @@ export function el<K extends keyof HTMLElementTagNameMap>(
   if (children) {
     instance.innerHTML = "";
     instance.append(
-      ...(children.filter((c) =>
-        c instanceof Node ? c : (String(c) as string | Node)
-      ) as string[])
+      ...(children.map((c) => {
+        if (c instanceof State) {
+          const text = document.createTextNode("");
+          makeEffect(() => {
+            text.textContent = String(c.value);
+          });
+          return text;
+        }
+        return c instanceof Node ? c : (String(c) as string | Node);
+      }) as string[])
     );
   }
   return instance;
@@ -30,13 +38,9 @@ el.$ = function querySelector<K extends keyof HTMLElementTagNameMap>(
   return element;
 };
 
-export function h<K extends keyof HTMLElementTagNameMap>(
-  tagName: JSX.ElementType,
-  props: any,
-  ...children: any[]
-) {
+export function h(tagName: JSX.ElementType, props: any, ...children: any[]) {
   if (typeof tagName == "function") {
-    return tagName({ ...props, children: [...children] });
+    return tagName({ ...props, children });
   }
   return el(tagName, { ...props, children });
 }

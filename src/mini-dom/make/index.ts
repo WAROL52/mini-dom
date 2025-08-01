@@ -3,7 +3,7 @@ export type FnOnChange<T> = (newValue: T, oldValue: T) => void;
 export type FnEffect = () => void;
 export type FnMemo<T> = () => T;
 
-class State<T> {
+export class State<T> {
   #value: T;
   #listener: Map<FnDispose, FnOnChange<T>>;
   static #statesCalled: Set<State<any>> = new Set();
