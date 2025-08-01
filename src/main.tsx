@@ -10,6 +10,9 @@ import {
 
 function Button({ name, index }: { name: string; index: State<number> }) {
   const count = makeState(1);
+  makeEffect(() => {
+    console.log("value", count.value);
+  });
   return (
     <button onclick={() => count.value++}>
       hello {name} {count} {index}
