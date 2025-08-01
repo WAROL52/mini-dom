@@ -1,59 +1,28 @@
+/** @jsx h */
 import "./style.css";
-import typescriptLogo from "./typescript.svg";
-import viteLogo from "/vite.svg";
-// import { setupCounter } from "./counter.ts";
-import { el } from "./mini-dom/el/index.ts";
-import { makeEffect, makeState } from "./mini-dom/make/index.ts";
+import { el, h } from "./mini-dom/el/index.ts";
+import { makeEffect, makeMemo, makeState } from "./mini-dom/make/index.ts";
 
-// document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
-//   <div>
-//     <a href="https://vite.dev" target="_blank">
-//       <img src="${viteLogo}" class="logo" alt="Vite logo" />
-//     </a>
-//     <a href="https://www.typescriptlang.org/" target="_blank">
-//       <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-//     </a>
-//     <h1>Vite + TypeScript</h1>
-//     <div class="card">
-//       <button id="counter" type="button"></button>
-//     </div>
-//     <p class="read-the-docs">
-//       Click on the Vite and TypeScript logos to learn more
-//     </p>
-//   </div>
-// `;
+const count = makeState(1);
 
-const count = makeState(10);
-const btn = el("button", {
-  className: "text-red-400 gregerg",
-  onclick(ev) {
-    console.log("click");
-    count.value++;
-  },
-  style: {
-    color: "red",
-    background: "green",
-  },
-  children: [count.value],
-});
+const count2 = makeMemo(() => count.value * 2);
+
+const span = <span>{count.value}</span>;
+
+const btn = <button onclick={() => count.value++}>click {span} </button>;
 
 el.$("div", "#app")?.appendChild(btn);
 
-function h<K extends keyof HTMLElementTagNameMap>(
-  tagName: K,
-  props: any,
-  ...children: any[]
-) {
-  return el(tagName, { ...props, children });
-}
-
-makeEffect(() => {
-  btn.innerHTML = "";
-  btn.appendChild(
-    <div onclick={() => console.log("click span")}>
-      hello <span>je suis {count.value} un span</span>{" "}
-    </div>
-  );
+const des = makeEffect(() => {
+  span.innerHTML = String(count2.value);
 });
 
+setInterval(() => {
+  btn.click();
+}, 1000);
+function Compo() {
+  return <div>hello</div>;
+}
+const els = <Compo />;
+btn.append(els);
 // setupCounter(document.querySelector<HTMLButtonElement>("#counter")!);

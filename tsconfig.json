@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "target": "ES2022",
+    "jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "target": "esnext",
     "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
