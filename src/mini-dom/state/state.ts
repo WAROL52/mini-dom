@@ -3,6 +3,12 @@ export type FnOnChange<T> = (newValue: T, oldValue: T) => void;
 export type FnEffect = () => void;
 export type FnMemo<T> = () => T;
 
+class ReadOnlyState {
+  constructor() {}
+}
+
+export type RState = typeof ReadOnlyState;
+
 export class State<T> {
   #value: T;
   #listener: Map<FnDispose, FnOnChange<T>>;
@@ -42,33 +48,5 @@ export class State<T> {
     this.#listener.set(dispose, fn);
     return dispose;
   }
+  static ReadOnly = ReadOnlyState;
 }
-
-export function makeState<T>(value: T) {
-  return new State(value);
-}
-
-export function makeEffect(fn: FnEffect) {
-  return State.effect(fn);
-}
-
-export function makeMemo<T>(fn: FnMemo<T>): State<T> {
-  const state = makeState<T | undefined>(undefined);
-  makeEffect(() => {
-    state.value = fn();
-  });
-  return state as State<T>;
-}
-
-const count = makeState(0);
-
-const double = makeMemo(() => (count.value % 10 == 0 ? count.value * 2 : 0));
-
-makeEffect(() => {
-  console.log("double", double.value);
-});
-
-makeEffect(() => {
-  console.log("count", count.value);
-  console.log("count", count);
-});

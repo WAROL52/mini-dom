@@ -1,9 +1,14 @@
 import { defineConfig } from 'vite'
-
+import path from 'path'
 export default defineConfig({
   esbuild: {
-    jsxFactory: 'h',
+    jsxFactory: 'MiniDom.createElement',
     jsxFragment: 'Fragment',
-    // jsxInject: `import { h } from "./mini-dom/el/index.ts"`,
+    jsxInject: `import { MiniDom } from "@/mini-dom";`,
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'), // Exemple: @ = src/
+    },
   },
 })

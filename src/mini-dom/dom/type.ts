@@ -1,3 +1,5 @@
+import type { RState, State } from "../state/state";
+
 type ElPropsKeyIncludedStart = "on" | "aria";
 type ElPropsKeyExcludedStart =
   | "form"
@@ -54,37 +56,58 @@ type ElPropsKey<
   ? never
   : K;
 
-export type ComponentHTMLTagName = keyof HTMLElementTagNameMap;
-
-export type ComponentProps<T extends ComponentHTMLTagName> = {
-  [K in ElPropsKey<T>]?: HTMLElementTagNameMap[T][K];
-} & {
-  children?: (string | number | boolean | bigint | null | undefined | Node)[];
-  style?: Partial<HTMLElementTagNameMap["div"]["style"]>;
-};
-
-export type ComponentHTMLElement = {
-  [K in ComponentHTMLTagName]: ComponentProps<K>;
-};
-
 declare global {
   namespace JSX {
+    type ComponentHTMLTagName = keyof HTMLElementTagNameMap;
+    type ElementNode =
+      | string
+      | number
+      | boolean
+      | State<any>
+      | RState
+      | string
+      | number
+      | boolean
+      | bigint
+      | null
+      | undefined
+      | Node
+      | ElementNode[];
+
+    type ComponentHTMLProps<T extends keyof HTMLElementTagNameMap> = {
+      [K in ElPropsKey<T>]?: HTMLElementTagNameMap[T][K];
+    } & {
+      children?: Children;
+      style?: Partial<HTMLElementTagNameMap["div"]["style"]>;
+    };
+    type ComponentFuncProps<T extends (props: any) => Children> =
+      Parameters<T>[0];
+    type ComponentProps<T extends ElementType> =
+      T extends keyof HTMLElementTagNameMap
+        ? ComponentHTMLProps<T>
+        : T extends (props: any) => Element
+        ? ComponentFuncProps<T>
+        : never;
+    type PropsWithChildren<T extends Record<any, any> = Record<any, any>> =
+      T & {
+        children?: Children[];
+      };
+
+    type ComponentHTMLElement = {
+      [K in ComponentHTMLTagName]: ComponentProps<K>;
+    };
     interface IntrinsicElements extends ComponentHTMLElement {}
 
     interface IntrinsicAttributes {
       key?: string | number;
     }
+    interface ElementChildrenAttribute {
+      children: {}; // specify children name to use
+    }
+    type Children = ElementNode | Element;
 
-    type ElementClass = {
-      render: () => Element;
-    };
-
-    type Element = HTMLElement;
-    // type Element = {
-    //   type: ElementType;
-    //   props: Record<string, any>;
-    //   key: string | null;
-    // };
+    type Element<T extends ComponentHTMLTagName = ComponentHTMLTagName> =
+      HTMLElementTagNameMap[T];
 
     type ElementType = keyof IntrinsicElements | ((props: any) => Element);
   }
