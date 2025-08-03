@@ -15,16 +15,3 @@ export function createMemo<T>(fn: FnMemo<T>): State<T> {
   });
   return state as State<T>;
 }
-
-const count = createState(0);
-
-const double = createMemo(() => (count.value % 10 == 0 ? count.value * 2 : 0));
-
-createEffect(() => {
-  console.log("double", double.value);
-});
-
-createEffect(() => {
-  console.log("count", count.value);
-  console.log("count", count);
-});

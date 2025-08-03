@@ -2,10 +2,14 @@ import { commitRoot } from "./commit";
 import { createDom } from "./dom";
 import type { Vdom } from "./vdom";
 
-requestIdleCallback(workLoop);
+const option: IdleRequestOptions = {
+  timeout: 0,
+};
+requestIdleCallback(workLoop, option);
 export const wip: Vdom.Wip = {
   nextUnitOfWork: null,
   wipRoot: null,
+  domMap: new Map(),
 };
 
 function workLoop(deadline: IdleDeadline) {
@@ -17,13 +21,13 @@ function workLoop(deadline: IdleDeadline) {
   if (!wip.nextUnitOfWork && wip.wipRoot) {
     commitRoot();
   }
-  requestIdleCallback(workLoop);
+  requestIdleCallback(workLoop, option);
 }
 
 function performUnitOfWork(fiber: Vdom.Fiber) {
-  if (!fiber.dom) {
-    fiber.dom = createDom(fiber);
-  }
+  //   if (!fiber.dom) {
+  //     fiber.dom = createDom(fiber);
+  //   }
   //   if (fiber.parent && fiber.parent.dom) {
   //     fiber.parent.dom.appendChild(fiber.dom);
   //   }
@@ -32,9 +36,10 @@ function performUnitOfWork(fiber: Vdom.Fiber) {
   let prevSibling: Vdom.Fiber | null = null;
   while (index < elements.length) {
     const element = elements[index];
+    if (!element.dom) continue;
     const newFiber: Vdom.Fiber = {
       ...element,
-      dom: null,
+      dom: element.dom,
       parent: fiber,
     };
     if (index == 0) {
@@ -55,7 +60,6 @@ function performUnitOfWork(fiber: Vdom.Fiber) {
     }
     nextFiber = nextFiber.parent;
   }
-  console.log("fiber", fiber);
 
   return null;
 }
