@@ -108,7 +108,9 @@ declare global {
 
     type Element<T extends ComponentHTMLTagName = ComponentHTMLTagName> =
       HTMLElementTagNameMap[T];
-
-    type ElementType = keyof IntrinsicElements | ((props: any) => Element);
+    type ElementTypeText = "TEXT_ELEMENT";
+    type ElementTypeHTML = keyof IntrinsicElements;
+    type ElementTypeFunc = (props: any) => Element;
+    type ElementType = ElementTypeHTML | ElementTypeFunc | ElementTypeText;
   }
 }

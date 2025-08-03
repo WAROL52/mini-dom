@@ -2,9 +2,12 @@ import { defineConfig } from 'vite'
 import path from 'path'
 export default defineConfig({
   esbuild: {
-    jsxFactory: 'MiniDom.createElement',
+    // jsxFactory: 'MiniDom.createElement',
+    // jsxFragment: 'Fragment',
+    // jsxInject: `import { MiniDom } from "@/mini-dom";`,
+	jsxFactory: 'VDom.createElement',
     jsxFragment: 'Fragment',
-    jsxInject: `import { MiniDom } from "@/mini-dom";`,
+    jsxInject: `import { VDom } from "@/mini-dom";`,
   },
   resolve: {
     alias: {

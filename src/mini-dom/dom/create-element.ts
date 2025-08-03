@@ -2,6 +2,7 @@
 
 import { createEffect } from "../state";
 import { State } from "../state/state";
+import { render } from "./render";
 
 function createElementHTML<K extends keyof HTMLElementTagNameMap>(
   tagName: K,
@@ -17,8 +18,9 @@ function createElementHTML<K extends keyof HTMLElementTagNameMap>(
     if (!Array.isArray(children)) {
       childrens = [children];
     } else childrens = children;
-    instance.append(
-      ...(childrens.map((c) => {
+    const childs = childrens
+      .flat()
+      .map((c) => {
         if (c instanceof State) {
           const text = document.createTextNode("");
           createEffect(() => {
@@ -26,10 +28,15 @@ function createElementHTML<K extends keyof HTMLElementTagNameMap>(
           });
           return text;
         }
-        return c instanceof Node ? c : (String(c) as string | Node);
-      }) as string[])
-    );
+        if (c instanceof Node) {
+          return c;
+        }
+        return document.createTextNode(String(c));
+      })
+      .flat();
+    instance.append(...childs);
   }
+
   return instance;
 }
 
